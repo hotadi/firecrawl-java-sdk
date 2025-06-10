@@ -75,7 +75,7 @@ FirecrawlClient client = new FirecrawlClient(
 // Simple scraping
 FirecrawlDocument doc = client.scrapeURL("https://example.com", null);
 System.out.println(doc.getHtml());
-        System.out.println(doc.getText());
+System.out.println(doc.getText());
 
 // Advanced scraping with options
 ScrapeParams params = new ScrapeParams();
@@ -95,15 +95,15 @@ SearchResponse resp = client.search(params);
 
 // Process results
 if (resp.isSuccess()) {
-        for (SearchResult result : resp.getResults()) {
+    for (SearchResult result : resp.getResults()) {
         System.out.println(result.getTitle() + " - " + result.getUrl());
-        }
-        }
+    }
+}
 
 // Check for warnings
-        if (resp.getWarning() != null) {
-        System.err.println("Warning: " + resp.getWarning());
-        }
+if (resp.getWarning() != null) {
+    System.err.println("Warning: " + resp.getWarning());
+}
 ```
 
 ### Web Crawling
@@ -122,8 +122,8 @@ System.out.println("Crawl status: " + status.getStatus());
 // Synchronous crawling (with polling)
 CrawlStatusResponse result = client.crawlURL("https://example.com", params, idempotencyKey, 5);
 if ("completed".equals(result.getStatus())) {
-FirecrawlDocument[] documents = result.getData();
-// Process crawled documents
+    FirecrawlDocument[] documents = result.getData();
+    // Process crawled documents
 }
 
 // Cancel a crawl job
