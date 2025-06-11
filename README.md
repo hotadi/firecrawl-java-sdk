@@ -15,10 +15,21 @@ Add the following dependency to your `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>dev.firecrawl</groupId>
+    <groupId>com.github.mendableai</groupId>
     <artifactId>firecrawl-java-sdk</artifactId>
-    <version>1.0.0</version>
+    <version>0.8</version>
 </dependency>
+```
+
+You'll also need to add the JitPack repository:
+
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
 ```
 
 ### Gradle
@@ -26,7 +37,12 @@ Add the following dependency to your `pom.xml`:
 Add the following to your `build.gradle`:
 
 ```groovy
-implementation 'dev.firecrawl:firecrawl-java-sdk:1.0.0'
+implementation 'com.github.mendableai:firecrawl-java-sdk:0.8'
+
+repositories {
+    mavenCentral()
+    maven { url = uri("https://jitpack.io") }
+}
 ```
 
 ### Building from Source
