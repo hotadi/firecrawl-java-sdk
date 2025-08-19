@@ -9,9 +9,37 @@ A Java client library for the [Firecrawl API](https://firecrawl.dev), providing 
 
 ## Installation
 
-### Maven
+### Maven (v2 from Maven Central)
 
-Add the following dependency to your `pom.xml`:
+Add the following dependency to your `pom.xml` (recommended):
+
+```xml
+<dependency>
+    <groupId>dev.firecrawl</groupId>
+    <artifactId>firecrawl-java-sdk</artifactId>
+    <version>2.0.0</version>
+</dependency>
+```
+
+Maven Central is used by default; no additional repository is required.
+
+### Gradle (v2 from Maven Central)
+
+Add the following to your `build.gradle` (Kotlin DSL similar):
+
+```groovy
+implementation 'dev.firecrawl:firecrawl-java-sdk:2.0.0'
+
+repositories {
+    mavenCentral()
+}
+```
+
+### Alternative: v1 via JitPack (legacy)
+
+If you still need the v1 package via JitPack, use the coordinates below and add the JitPack repository.
+
+Maven:
 
 ```xml
 <dependency>
@@ -19,11 +47,7 @@ Add the following dependency to your `pom.xml`:
     <artifactId>firecrawl-java-sdk</artifactId>
     <version>0.8</version>
 </dependency>
-```
 
-You'll also need to add the JitPack repository:
-
-```xml
 <repositories>
     <repository>
         <id>jitpack.io</id>
@@ -32,16 +56,14 @@ You'll also need to add the JitPack repository:
 </repositories>
 ```
 
-### Gradle
-
-Add the following to your `build.gradle`:
+Gradle:
 
 ```groovy
 implementation 'com.github.mendableai:firecrawl-java-sdk:0.8'
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://jitpack.io") }
+    maven { url = uri('https://jitpack.io') }
 }
 ```
 
@@ -60,29 +82,32 @@ mvn install
 ### Creating a Client
 
 ```java
-import dev.firecrawl.*;
+import dev.firecrawl.client.FirecrawlClient;
+import dev.firecrawl.model.*;
 import java.time.Duration;
 
 // Create a client with default endpoint
 FirecrawlClient client = new FirecrawlClient(
-        "your-api-key",
-        null,  // Uses default endpoint: https://api.firecrawl.dev
-        Duration.ofSeconds(60)  // Request timeout
+    "your-api-key",
+    null,  // Uses default endpoint: https://api.firecrawl.dev
+    Duration.ofSeconds(60)  // Request timeout
 );
 
-        // Or specify a custom endpoint
-        FirecrawlClient client = new FirecrawlClient(
-                "your-api-key",
-                "https://custom-api-endpoint.example.com",
-                Duration.ofSeconds(120)
-        );
+// Or specify a custom endpoint
+FirecrawlClient client2 = new FirecrawlClient(
+    "your-api-key",
+    "https://custom-api-endpoint.example.com",
+    Duration.ofSeconds(120)
+);
 
-        // You can also set the API key via the FIRECRAWL_API_KEY environment variable
-        FirecrawlClient client = new FirecrawlClient(
-                null,  // Will use FIRECRAWL_API_KEY environment variable
-                null,
-                Duration.ofSeconds(120)  // Default timeout is 120 seconds
-        );
+// You can also set the API key via the FIRECRAWL_API_KEY environment variable
+// Optionally set FIRECRAWL_API_URL to override the default endpoint
+// Pass null timeout to use the default of 120 seconds
+FirecrawlClient client3 = new FirecrawlClient(
+    null,  // Will use FIRECRAWL_API_KEY environment variable
+    null,  // Will use FIRECRAWL_API_URL if set, otherwise https://api.firecrawl.dev
+    null   // Default timeout is 120 seconds when null
+);
 ```
 
 ### Web Scraping
@@ -97,10 +122,12 @@ System.out.println(doc.getText());
 ScrapeParams params = new ScrapeParams();
 params.setOnlyMainContent(true);  // Extract only main content
 params.setWaitFor(5000);          // Wait 5 seconds after page load
-FirecrawlDocument doc = client.scrapeURL("https://example.com", params);
+FirecrawlDocument doc2 = client.scrapeURL("https://example.com", params);
 ```
 
 ### Search
+
+Note: In v2, sources currently only supports "web". The SDK enforces this by normalizing sources to ["web"] when provided.
 
 ```java
 // Basic search

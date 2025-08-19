@@ -84,11 +84,15 @@ class CrawlService extends BaseService {
         JsonObject body = new JsonObject();
         body.addProperty("url", url);
         
-        if (params != null && params.getScrapeOptions() != null) {
-            body.add("scrapeOptions", gson.toJsonTree(params.getScrapeOptions()));
+        if (params != null) {
+            if (params.getScrapeOptions() != null) body.add("scrapeOptions", gson.toJsonTree(params.getScrapeOptions()));
+            if (params.getPrompt() != null) body.addProperty("prompt", params.getPrompt());
+            if (params.getCrawlEntireDomain() != null) body.addProperty("crawlEntireDomain", params.getCrawlEntireDomain());
+            if (params.getMaxDiscoveryDepth() != null) body.addProperty("maxDiscoveryDepth", params.getMaxDiscoveryDepth());
+            if (params.getSitemap() != null) body.addProperty("sitemap", params.getSitemap());
         }
         
-        Request request = buildRequest("/v1/crawl", body, idempotencyKey);
+        Request request = buildRequest("/v2/crawl", body, idempotencyKey);
         return executeRequest(request, CrawlResponse.class);
     }
 
@@ -103,7 +107,7 @@ class CrawlService extends BaseService {
     CrawlStatusResponse checkCrawlStatus(String id) throws IOException, FirecrawlException {
         Objects.requireNonNull(id, "Crawl job ID must not be null");
         
-        Request request = buildRequest("/v1/crawl/" + id, null, null, "GET");
+        Request request = buildRequest("/v2/crawl/" + id, null, null, "GET");
         return executeRequest(request, CrawlStatusResponse.class);
     }
 
@@ -120,12 +124,29 @@ class CrawlService extends BaseService {
         
         RequestBody emptyBody = RequestBody.create(new byte[0], null);
         Request request = new Request.Builder()
-                .url(apiUrl + "/v1/crawl/" + id)
+                .url(apiUrl + "/v2/crawl/" + id)
                 .delete(emptyBody)
                 .header("Authorization", "Bearer " + apiKey)
                 .build();
                 
         return executeRequest(request, CancelCrawlJobResponse.class);
+    }
+
+    /**
+     * v2: Preview crawl params derived from a natural language prompt.
+     *
+     * @param url base URL to crawl
+     * @param prompt natural language prompt
+     * @return JSON object with derived crawl parameters
+     */
+    com.google.gson.JsonObject crawlParamsPreview(String url, String prompt) throws IOException, FirecrawlException {
+        Objects.requireNonNull(url, "URL must not be null");
+        Objects.requireNonNull(prompt, "Prompt must not be null");
+        com.google.gson.JsonObject body = new com.google.gson.JsonObject();
+        body.addProperty("url", url);
+        body.addProperty("prompt", prompt);
+        Request request = buildRequest("/v2/crawl/params-preview", body);
+        return executeRequest(request, com.google.gson.JsonObject.class);
     }
 
     /**

@@ -23,7 +23,13 @@ public class SearchResult {
      * @return the title
      */
     public String getTitle() {
-        return title;
+        if (title != null && !title.isEmpty()) return title;
+        if (metadata != null && metadata.getTitle() != null && !metadata.getTitle().isEmpty()) {
+            return metadata.getTitle();
+        }
+        // Derive from markdown first heading if available
+        String derived = deriveTitleFromMarkdown();
+        return (derived != null && !derived.isEmpty()) ? derived : null;
     }
 
     /**
@@ -32,7 +38,13 @@ public class SearchResult {
      * @return the description
      */
     public String getDescription() {
-        return description;
+        if (description != null && !description.isEmpty()) return description;
+        if (metadata != null && metadata.getDescription() != null && !metadata.getDescription().isEmpty()) {
+            return metadata.getDescription();
+        }
+        // Derive a simple description from markdown if possible
+        String derived = deriveDescriptionFromMarkdown();
+        return (derived != null && !derived.isEmpty()) ? derived : null;
     }
 
     /**
@@ -41,7 +53,19 @@ public class SearchResult {
      * @return the URL
      */
     public String getUrl() {
-        return url;
+        if (url != null && !url.isEmpty()) return url;
+        if (metadata != null && metadata.getSourceURL() != null && !metadata.getSourceURL().isEmpty()) {
+            return metadata.getSourceURL();
+        }
+        // Fallback to first link in links[] if present
+        if (links != null && links.length > 0) {
+            for (String l : links) {
+                if (l != null && !l.isEmpty() && looksLikeUrl(l)) {
+                    return l;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -98,6 +122,46 @@ public class SearchResult {
         return metadata;
     }
 
+    private String deriveTitleFromMarkdown() {
+        if (markdown == null || markdown.isEmpty()) return null;
+        String[] lines = markdown.split("\n");
+        for (String line : lines) {
+            if (line == null) continue;
+            String trimmed = line.trim();
+            if (trimmed.isEmpty()) continue;
+            // Take first non-empty line, strip leading markdown header symbols
+            if (trimmed.startsWith("#")) {
+                // remove leading #'s and spaces
+                trimmed = trimmed.replaceFirst("^#+\\s*", "").trim();
+            }
+            return trimmed.isEmpty() ? null : trimmed;
+        }
+        return null;
+    }
+
+    private String deriveDescriptionFromMarkdown() {
+        if (markdown == null || markdown.isEmpty()) return null;
+        String[] lines = markdown.split("\n");
+        boolean skippedTitle = false;
+        for (String line : lines) {
+            if (line == null) continue;
+            String trimmed = line.trim();
+            if (trimmed.isEmpty()) continue;
+            if (!skippedTitle) { // skip first non-empty as title
+                skippedTitle = true;
+                continue;
+            }
+            // Return the next meaningful line as description
+            return trimmed;
+        }
+        return null;
+    }
+
+    private boolean looksLikeUrl(String s) {
+        String lower = s.toLowerCase();
+        return lower.startsWith("http://") || lower.startsWith("https://");
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -124,9 +188,9 @@ public class SearchResult {
     @Override
     public String toString() {
         return "SearchResult{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", url='" + url + '\'' +
+                "title='" + getTitle() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", url='" + getUrl() + '\'' +
                 ", markdown='" + (markdown != null ? markdown.substring(0, Math.min(markdown.length(), 50)) + "..." : null) + '\'' +
                 ", html='" + (html != null ? html.substring(0, Math.min(html.length(), 50)) + "..." : null) + '\'' +
                 ", rawHtml='" + (rawHtml != null ? rawHtml.substring(0, Math.min(rawHtml.length(), 50)) + "..." : null) + '\'' +

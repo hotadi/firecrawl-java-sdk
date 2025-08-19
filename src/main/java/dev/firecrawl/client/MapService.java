@@ -53,7 +53,7 @@ class MapService extends BaseService {
             if (params.getLimit() != null) body.addProperty("limit", params.getLimit());
         }
         
-        Request request = buildRequest("/v1/map", body);
+        Request request = buildRequest("/v2/map", body);
         MapResponse response = executeRequest(request, MapResponse.class);
         
         if (!response.isSuccess()) {

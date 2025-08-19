@@ -17,6 +17,8 @@ public class SearchParams extends BaseParams<SearchParams> {
     private Integer timeout;
     private Boolean ignoreInvalidURLs;
     private ScrapeParams scrapeOptions;
+    // v2: support multiple search sources (e.g., "web", "news", "images")
+    private String[] sources;
 
     /**
      * Creates a new SearchParams instance with the required query.
@@ -220,6 +222,26 @@ public class SearchParams extends BaseParams<SearchParams> {
         return self();
     }
 
+    /**
+     * v2: Returns the search sources.
+     *
+     * @return sources
+     */
+    public String[] getSources() {
+        return sources;
+    }
+
+    /**
+     * v2: Sets the search sources (e.g., "web", "news", "images").
+     *
+     * @param sources array of sources
+     * @return this instance for method chaining
+     */
+    public SearchParams setSources(String[] sources) {
+        this.sources = sources;
+        return self();
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -234,12 +256,13 @@ public class SearchParams extends BaseParams<SearchParams> {
                 Objects.equals(location, that.location) &&
                 Objects.equals(timeout, that.timeout) &&
                 Objects.equals(ignoreInvalidURLs, that.ignoreInvalidURLs) &&
-                Objects.equals(scrapeOptions, that.scrapeOptions);
+                Objects.equals(scrapeOptions, that.scrapeOptions) &&
+                java.util.Arrays.equals(sources, that.sources);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), query, limit, tbs, lang, country, location, timeout, ignoreInvalidURLs, scrapeOptions);
+        return Objects.hash(super.hashCode(), query, limit, tbs, lang, country, location, timeout, ignoreInvalidURLs, scrapeOptions) * 31 + java.util.Arrays.hashCode(sources);
     }
 
     @Override
@@ -254,6 +277,7 @@ public class SearchParams extends BaseParams<SearchParams> {
                 ", timeout=" + timeout +
                 ", ignoreInvalidURLs=" + ignoreInvalidURLs +
                 ", scrapeOptions=" + scrapeOptions +
+                ", sources=" + java.util.Arrays.toString(sources) +
                 '}';
     }
 }

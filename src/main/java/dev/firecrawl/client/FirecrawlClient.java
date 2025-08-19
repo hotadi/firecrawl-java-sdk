@@ -71,6 +71,22 @@ public class FirecrawlClient {
     }
 
     /**
+     * v2: Searches for the specified query with optional parameters.
+     */
+    public SearchResponse search(String query) throws IOException, FirecrawlException {
+        return search(new SearchParams(query));
+    }
+
+    /**
+     * v2: Searches for the specified query with optional parameters.
+     */
+    public SearchResponse search(String query, SearchParams options) throws IOException, FirecrawlException {
+        SearchParams sp = options != null ? options : new SearchParams(query);
+        sp.setQuery(query);
+        return search(sp);
+    }
+
+    /**
      * Searches for the specified query with the specified legacy parameters.
      *
      * @param query the search query
@@ -78,7 +94,7 @@ public class FirecrawlClient {
      * @return the search response
      * @throws IOException if an I/O error occurs
      * @throws FirecrawlException if the API returns an error
-     * @deprecated use {@link #search(SearchParams)} instead
+     * @deprecated use {@link #search(String, SearchParams)} instead
      */
     @Deprecated
     public SearchResponse search(String query, JsonObject legacyParams) throws IOException, FirecrawlException {
@@ -99,6 +115,14 @@ public class FirecrawlClient {
     }
 
     /**
+     * v2: Scrapes the specified URL with the specified parameters.
+     * Equivalent to scrapeURL.
+     */
+    public FirecrawlDocument scrape(String url, ScrapeParams params) throws IOException, FirecrawlException {
+        return scrapeService.scrapeURL(url, params);
+    }
+
+    /**
      * Maps the specified URL with the specified parameters.
      *
      * @param url the URL to map
@@ -108,6 +132,14 @@ public class FirecrawlClient {
      * @throws FirecrawlException if the API returns an error
      */
     public MapResponse mapURL(String url, MapParams params) throws IOException, FirecrawlException {
+        return mapService.mapURL(url, params);
+    }
+
+    /**
+     * v2: Maps the specified URL with the specified parameters.
+     * Equivalent to mapURL.
+     */
+    public MapResponse map(String url, MapParams params) throws IOException, FirecrawlException {
         return mapService.mapURL(url, params);
     }
 
@@ -124,6 +156,28 @@ public class FirecrawlClient {
      */
     public CrawlStatusResponse crawlURL(String url, CrawlParams params, String idempotencyKey, int... pollInterval) throws IOException, FirecrawlException {
         return crawlService.crawlURL(url, params, idempotencyKey, pollInterval);
+    }
+
+    /**
+     * v2: Crawls the specified URL (waiter). Generates an idempotency key.
+     */
+    public CrawlStatusResponse crawl(String url, CrawlParams params, int... pollInterval) throws IOException, FirecrawlException {
+        String key = java.util.UUID.randomUUID().toString();
+        return crawlService.crawlURL(url, params, key, pollInterval);
+    }
+
+    /**
+     * v2: Starts a crawl job (async) without idempotency key.
+     */
+    public CrawlResponse startCrawl(String url, CrawlParams params) throws IOException, FirecrawlException {
+        return crawlService.asyncCrawlURL(url, params, null);
+    }
+
+    /**
+     * v2: Starts a crawl job (async) with idempotency key.
+     */
+    public CrawlResponse startCrawl(String url, CrawlParams params, String idempotencyKey) throws IOException, FirecrawlException {
+        return crawlService.asyncCrawlURL(url, params, idempotencyKey);
     }
 
     /**
@@ -153,6 +207,13 @@ public class FirecrawlClient {
     }
 
     /**
+     * v2: Gets the status of a crawl job (alias of checkCrawlStatus).
+     */
+    public CrawlStatusResponse getCrawlStatus(String id) throws IOException, FirecrawlException {
+        return crawlService.checkCrawlStatus(id);
+    }
+
+    /**
      * Cancels the specified crawl job.
      *
      * @param id the crawl job ID
@@ -162,6 +223,20 @@ public class FirecrawlClient {
      */
     public CancelCrawlJobResponse cancelCrawlJob(String id) throws IOException, FirecrawlException {
         return crawlService.cancelCrawlJob(id);
+    }
+
+    /**
+     * v2: Cancels a crawl job (alias of cancelCrawlJob).
+     */
+    public CancelCrawlJobResponse cancelCrawl(String id) throws IOException, FirecrawlException {
+        return crawlService.cancelCrawlJob(id);
+    }
+
+    /**
+     * v2: Preview crawl parameters derived from a URL and prompt.
+     */
+    public JsonObject crawlParamsPreview(String url, String prompt) throws IOException, FirecrawlException {
+        return crawlService.crawlParamsPreview(url, prompt);
     }
 
     /**
