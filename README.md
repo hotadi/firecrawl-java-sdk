@@ -9,61 +9,69 @@ A Java client library for the [Firecrawl API](https://firecrawl.dev), providing 
 
 ## Installation
 
-### Maven (v2 from Maven Central)
+### Maven/Gradle (v2 via JitPack)
 
-Add the following dependency to your `pom.xml` (recommended):
+v2 of this SDK is distributed via JitPack. Add the JitPack repository and use the JitPack coordinates for this repo.
 
-```xml
-<dependency>
-    <groupId>dev.firecrawl</groupId>
-    <artifactId>firecrawl-java-sdk</artifactId>
-    <version>2.0.0</version>
-</dependency>
-```
-
-Maven Central is used by default; no additional repository is required.
-
-### Gradle (v2 from Maven Central)
-
-Add the following to your `build.gradle` (Kotlin DSL similar):
-
-```groovy
-implementation 'dev.firecrawl:firecrawl-java-sdk:2.0.0'
-
-repositories {
-    mavenCentral()
-}
-```
-
-### Alternative: v1 via JitPack (legacy)
-
-If you still need the v1 package via JitPack, use the coordinates below and add the JitPack repository.
-
-Maven:
+Maven (pom.xml):
 
 ```xml
-<dependency>
-    <groupId>com.github.mendableai</groupId>
-    <artifactId>firecrawl-java-sdk</artifactId>
-    <version>0.8</version>
-</dependency>
-
 <repositories>
     <repository>
         <id>jitpack.io</id>
         <url>https://jitpack.io</url>
     </repository>
 </repositories>
+
+<dependency>
+    <groupId>com.github.firecrawl</groupId>
+    <artifactId>firecrawl-java-sdk</artifactId>
+    <version>2.0.0</version>
+</dependency>
+```
+
+Gradle (Groovy DSL; Kotlin DSL similar):
+
+```groovy
+repositories {
+    maven { url = uri('https://jitpack.io') }
+}
+
+dependencies {
+    implementation 'com.github.firecrawl:firecrawl-java-sdk:2.0.0'
+}
+```
+
+### Legacy: v1 via JitPack
+
+If you still need the legacy v1 package via JitPack, use the coordinates below and include the JitPack repository.
+
+Maven:
+
+```xml
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+
+<dependency>
+    <groupId>com.github.mendableai</groupId>
+    <artifactId>firecrawl-java-sdk</artifactId>
+    <version>0.8</version>
+</dependency>
 ```
 
 Gradle:
 
 ```groovy
-implementation 'com.github.mendableai:firecrawl-java-sdk:0.8'
-
 repositories {
-    mavenCentral()
     maven { url = uri('https://jitpack.io') }
+}
+
+dependencies {
+    implementation 'com.github.mendableai:firecrawl-java-sdk:0.8'
 }
 ```
 
