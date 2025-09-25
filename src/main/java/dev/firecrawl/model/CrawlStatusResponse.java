@@ -9,7 +9,7 @@ import java.util.Objects;
 public class CrawlStatusResponse extends BaseResponse {
     private String status;
     private FirecrawlDocument[] data;
-
+    private String next;
     /**
      * Returns the status of the crawl job.
      *
@@ -28,6 +28,11 @@ public class CrawlStatusResponse extends BaseResponse {
         return data;
     }
 
+    /**
+     * Returns the URL of the next page to crawl.
+     * @return
+     */
+    public String getNext() { return next;}
     /**
      * Checks if the crawl job is completed.
      *
@@ -78,6 +83,7 @@ public class CrawlStatusResponse extends BaseResponse {
                 "success=" + isSuccess() +
                 ", warning='" + getWarning() + '\'' +
                 ", status='" + status + '\'' +
+                ", next='" + next + '\'' +
                 ", data=" + Arrays.toString(data) +
                 '}';
     }
